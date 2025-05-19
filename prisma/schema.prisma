@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id          String    @id @default(uuid())
+  email       String    @unique
+  password    String
+  firstName   String
+  lastName    String
+  role        AdminRole
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+enum AdminRole {
+  SUPERADMIN
+  ENROLLER
+  AUTHENTICATOR
+}
+
+model Fingerprint {
+  id          String    @id @default(uuid())
+  studentId   String  
+  template    Bytes
+  type        FingerType
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  student     Student   @relation(fields: [studentId], references: [id])
+  @@unique([studentId, type])
+}
+
+enum FingerType {
+  THUMB
+  INDEX
+  MIDDLE
+  RING
+  PINKY
+}
+
+model Student {
+  id          String    @id @default(uuid())
+  email       String    @unique
+  firstName   String
+  lastName    String
+  matricNo    String    @unique
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  fingerprints       Fingerprint[]
+}

@@ -11,7 +11,7 @@
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:generate": "prisma generate",
-    "db:seed": "tsx --env-file=.env prisma/seeders/fare_condition.seeder.ts",
+    "db:seed": "tsx --env-file=.env prisma/seeder.ts",
     "db:studio": "prisma studio",
     "test": "jest"
   },
@@ -19,6 +19,7 @@
   "author": "Cysteine - Anettcom Technologies",
   "license": "MIT",
   "dependencies": {
+    "@prisma/client": "^6.8.2",
     "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
