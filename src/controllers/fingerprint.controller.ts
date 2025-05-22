@@ -17,9 +17,14 @@ const getFingerprintsByStudent = catchAsync(async (req, res) => {
     options
   )
 
+  const encodedFingerprints = fingerprints.map((fingerprint) => ({
+    ...fingerprint,
+    template: Buffer.from(fingerprint.template).toString('base64'),
+  }))
+
   res.status(200).json({
     success: true,
-    data: fingerprints,
+    data: encodedFingerprints,
   })
 })
 
@@ -35,13 +40,10 @@ const createFingerprint = catchAsync(async (req, res) => {
     template: Buffer.from(payload.template, 'base64'),
   }
 
-  const savedFingerprint = await fingerprintService.createFingerprint(
-    newFingerprint
-  )
+  await fingerprintService.createFingerprint(newFingerprint)
 
   res.status(201).json({
     success: true,
-    data: savedFingerprint,
     message: 'Fingerprint saved successfully',
   })
 })
@@ -59,7 +61,11 @@ const updateFingerprint = catchAsync(async (req, res) => {
     template: Buffer.from(payload.template, 'base64'),
   }
 
-  await fingerprintService.updateFingerprint({ id }, newFingerprint)
+  const updatedFingerprint = await fingerprintService.updateFingerprint(
+    { id },
+    newFingerprint
+  )
+  if (!updatedFingerprint) throw new NotFoundError('Fingerprint not found')
 
   res.status(201).json({
     success: true,

@@ -12,11 +12,12 @@ const getStudents = catchAsync(async (req, res) => {
   const query = pick(req.query, ['page', 'limit'])
   const options = { page: Number(query.page), limit: Number(query.limit) }
 
-  const students = await studentService.findStudents({}, options)
+  const [students, total] = await studentService.findStudents({}, options)
 
   res.status(200).json({
     success: true,
     data: students,
+    total: total,
   })
 })
 
@@ -26,7 +27,7 @@ const searchStudentsByMatric = catchAsync(async (req, res) => {
   const filter: StudentWhereInput = { matricNo: { contains: query.search } }
   const options = { page: Number(query.page), limit: Number(query.limit) }
 
-  const students = await studentService.findStudents(filter, options)
+  const [students] = await studentService.findStudents(filter, options)
 
   res.status(200).json({
     success: true,
@@ -40,9 +41,16 @@ const getStudent = catchAsync(async (req, res) => {
   const student = await studentService.findStudent({ id })
   if (!student) throw new NotFoundError('Student not found')
 
+  const parsedFingerPrint = student.fingerprints.map((fingerprint) => ({
+    ...fingerprint,
+    template: Buffer.from(fingerprint.template).toString('base64'),
+  }))
+
+  const parsedStudent = { ...student, fingerprint: parsedFingerPrint }
+
   res.status(200).json({
     success: true,
-    data: student,
+    data: parsedStudent,
   })
 })
 
@@ -72,7 +80,8 @@ const updateStudent = catchAsync(async (req, res) => {
     'matricNo',
   ])
 
-  await studentService.updateStudent({ id }, newStudent)
+  const updatedStudent = await studentService.updateStudent({ id }, newStudent)
+  if (!updatedStudent) throw new NotFoundError('Student not found')
 
   res.status(201).json({
     success: true,

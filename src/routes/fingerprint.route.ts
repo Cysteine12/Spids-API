@@ -8,7 +8,7 @@ import { fingerprintValidation } from '../validations'
 const router = express.Router()
 
 router.get(
-  '/student/studentId',
+  '/student/:studentId',
   passport.authenticate('jwt', { session: false }),
   authorize(['SUPERADMIN', 'AUTHENTICATOR', 'ENROLLER']),
   fingerprintController.getFingerprintsByStudent

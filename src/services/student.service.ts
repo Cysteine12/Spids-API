@@ -1,5 +1,5 @@
 import prisma from '../config/prisma'
-import { Prisma, Student } from '@prisma/client'
+import { Fingerprint, Prisma, Student } from '@prisma/client'
 
 export type StudentFindManyArgs = Prisma.StudentFindManyArgs
 export type StudentWhereInput = Prisma.StudentWhereInput
@@ -14,23 +14,28 @@ const findStudents = async (
     page?: number
     limit?: number
   }
-): Promise<Student[]> => {
+): Promise<[students: Student[], total: number]> => {
   if (options?.page && options?.limit) {
     options.skip = (options?.page - 1) * options?.limit
   }
 
-  return await prisma.student.findMany({
-    where: filter,
-    skip: options?.skip || 0,
-    take: options?.limit || 20,
-  })
+  return await prisma.$transaction([
+    prisma.student.findMany({
+      where: filter,
+      skip: options?.skip || 0,
+      take: options?.limit || 20,
+      include: { _count: true },
+    }),
+    prisma.student.count(),
+  ])
 }
 
 const findStudent = async (
   filter: StudentWhereUniqueInput
-): Promise<Student | null> => {
+): Promise<(Student & { fingerprints: Fingerprint[] }) | null> => {
   return await prisma.student.findUnique({
     where: filter,
+    include: { fingerprints: true },
   })
 }
 
