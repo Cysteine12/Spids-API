@@ -5,7 +5,7 @@ import pick from '../utils/pick'
 import {
   CreateFingerprintSchema,
   UpdateFingerprintSchema,
-} from '../validations/fingerprint.validation'
+} from '../validations'
 
 const getFingerprintsByStudent = catchAsync(async (req, res) => {
   const { studentId } = req.params

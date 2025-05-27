@@ -3,13 +3,13 @@ import { adminService } from '../services'
 import catchAsync from '../utils/catchAsync'
 import exclude from '../utils/exclude'
 import pick from '../utils/pick'
+import bcrypt from 'bcryptjs'
 import {
   CreateAdminSchema,
   UpdateAdminRoleSchema,
   UpdateAdminSchema,
   UpdateProfileSchema,
-} from '../validations/admin.validation'
-import bcrypt from 'bcryptjs'
+} from '../validations'
 
 const getProfile = catchAsync((req, res) => {
   const user = req.user!

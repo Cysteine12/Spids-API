@@ -3,10 +3,7 @@ import { studentService } from '../services'
 import { StudentWhereInput } from '../services/student.service'
 import catchAsync from '../utils/catchAsync'
 import pick from '../utils/pick'
-import {
-  CreateStudentSchema,
-  UpdateStudentSchema,
-} from '../validations/student.validation'
+import { CreateStudentSchema, UpdateStudentSchema } from '../validations'
 
 const getStudents = catchAsync(async (req, res) => {
   const query = pick(req.query, ['page', 'limit'])
@@ -46,7 +43,7 @@ const getStudent = catchAsync(async (req, res) => {
     template: Buffer.from(fingerprint.template).toString('base64'),
   }))
 
-  const parsedStudent = { ...student, fingerprint: parsedFingerPrint }
+  const parsedStudent = { ...student, fingerprints: parsedFingerPrint }
 
   res.status(200).json({
     success: true,
